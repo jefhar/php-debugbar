@@ -1152,6 +1152,7 @@ class JavascriptRenderer
 
         $suffix = !$initialize ? '(ajax)' : null;
         if ($this->areDatasetsDeferred()) {
+            $this->debugBar->getData();
             $js .= $this->getLoadDatasetCode($this->debugBar->getCurrentRequestId(), $suffix);
         } else {
             $js .= $this->getAddDatasetCode($this->debugBar->getCurrentRequestId(), $this->debugBar->getData(), $suffix);
@@ -1254,6 +1255,11 @@ class JavascriptRenderer
             }
         }
         $controls = array_merge($widgets, $this->controls);
+
+        // Allow widgets to be sorted by order if specified
+        uasort($controls, function(array $control){
+            return $control['order'] ?? 0;
+        });
 
         foreach (array_filter($controls) as $name => $options) {
             $opts = array_diff_key($options, array_flip($excludedOptions));
